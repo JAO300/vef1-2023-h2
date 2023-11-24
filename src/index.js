@@ -20,17 +20,6 @@ function route() {
   } else {
     renderFrontPage(document.body);
   }
-
-  const goBackLink = document.body.querySelector('.goBack');
-
-  if (!goBackLink) {
-    return;
-  } else {
-    goBackLink.addEventListener('click', function (event) {
-      event.preventDefault();
-      window.history.go(-1);
-    });
-  }
 }
 
 route();
@@ -188,7 +177,7 @@ async function renderDetails(parentElement, id) {
   product.remove();
   empty(parentElement.querySelector('products'));
   const container = el('div', { class: 'productIdDiv' });
-  const backElement = el('a', { href: '', class: 'goBack' }, 'Til baka');
+  const backElement = el('a', { href: '/', class: 'goBack' }, 'Til baka');
 
   const mainEl = parentElement.querySelector('main');
 
@@ -232,16 +221,16 @@ async function renderDetails(parentElement, id) {
 
   mainEl.appendChild(container);
 
-    
-    const relatedProducts = await getRelatedProducts(result.category_id, id);
+    console.log(result.category_id, id)
+    const relatedProducts = await getRelatedProducts(result.category_id);
 
     if (relatedProducts && relatedProducts.length > 0) {
       const relatedProductsContainer = el('div', { class: 'relatedProducts' });
-      const relatedProductsHeading = el('h2', {}, 'Vörur úr sama flokki');
+      const Heading = el('h2', {}, 'Vörur úr sama flokki');
+
+      mainEl.appendChild(Heading);
   
-      relatedProductsContainer.appendChild(relatedProductsHeading);
-  
-      for (let i = 0; i < Math.min(3, relatedProducts.length); i++) {
+      for (let i = 0; i < relatedProducts.length; i++) {
         const relatedProductBox = el('div', { class: 'productBox' });
         const relatedProductName = el(
           'a',
@@ -280,8 +269,8 @@ async function renderDetails(parentElement, id) {
     return mainEl;
   }
   
-  async function getRelatedProducts(categoryId, currentProductId) {
-    const url = new URL(`/products?category_id=${categoryId}&limit=3&id_ne=${currentProductId}`, baseUrl);
+  async function getRelatedProducts(categoryId) {
+    const url = new URL(`/products?category_id=${categoryId}&limit=3`, baseUrl);
 
   
     let response;
@@ -308,7 +297,7 @@ async function renderDetails(parentElement, id) {
     }
   
     
-    const relatedProducts = data.items.filter((product) => product.id !== currentProductId);
+    const relatedProducts = data.items.filter((product) => product.id);
   
     return relatedProducts;
   }
